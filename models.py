@@ -19,18 +19,24 @@ class Net(nn.Module):
         # As an example, you've been given a convolutional layer, which you may (but don't have to) change:
         # 1 input image channel (grayscale), 32 output channels/feature maps, 5x5 square convolution kernel
 
-        #Suppose I have an input 64x64 and kernel 4x4
-        self.conv1 = nn.Conv2d(1, 32, 4) #32 filters so image shape is (32,61,61)
-        self.pool1 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (32,30,30) - I think it will get grounded to 30 from 30.5 - TODO: test it
-        self.drop1 = nn.Dropout(p=0.15)
-        self.conv2 = nn.Conv2d(32,64,3) #64 filters so image shape is (64,28,28)
-        self.pool2 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (64,14,14)
-        self.drop2 = nn.Dropout(p=0.3)
-        self.conv3 = nn.Conv2d(64,128,3) #128 filters so image shape is (128, 12,12)
-        self.pool3 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (128,6,6)
-        self.drop3 = nn.Dropout(p=0.4)
-        
-        self.fc1 = nn.Linear(4608,1000) #128*6*6 = 4608
+        #Suppose I have an input 224x224 and kernel 4x4
+        self.conv1 = nn.Conv2d(1, 32, 4) #32 filters so image shape is (32,221x221)
+        self.pool1 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (32,110,110) - I think it will get grounded to 110 from 110.5 - TODO: test it
+        self.drop1 = nn.Dropout(p=0.1)
+        self.conv2 = nn.Conv2d(32,64,3) #64 filters so image shape is (64,108,108)
+        self.pool2 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (64,54,54)
+        self.drop2 = nn.Dropout(p=0.2)
+        self.conv3 = nn.Conv2d(64,128,3) #128 filters so image shape is (128, 52,52)
+        self.pool3 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (128,26,26)
+        self.drop3 = nn.Dropout(p=0.3)        
+        self.conv4 = nn.Conv2d(64,256,2) #128 filters so image shape is (128, 25,25)
+        self.pool4 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (128,12,12)
+        self.drop4 = nn.Dropout(p=0.4)
+        self.conv5 = nn.Conv2d(64,512,2) #128 filters so image shape is (128, 11,11)
+        self.pool5 = nn.MaxPool2d(2,2) #stride = 2 so image shape is (128,5,5)
+        self.drop5 = nn.Dropout(p=0.5)
+
+        self.fc1 = nn.Linear(3200,1000) #128*5*5 = 3200
         self.fc2 = nn.Linear(1000,1000)
         self.fc3 = nn.Linear(1000,136)
 
@@ -48,6 +54,9 @@ class Net(nn.Module):
         x = self.drop1(self.pool1(F.relu(self.conv1(x))))
         x = self.drop2(self.pool2(F.relu(self.conv2(x))))
         x = self.drop3(self.pool3(F.relu(self.conv3(x))))
+        x = self.drop4(self.pool4(F.relu(self.conv4(x))))
+        x = self.drop5(self.pool5(F.relu(self.conv5(x))))
+
 
         x = x.view(x.size(0), -1)
         x = self.drop_fc1(F.relu(self.fc1(x)))
