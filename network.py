@@ -6,13 +6,16 @@ import torch.nn.functional as F
 
 ## TODO: Once you've define the network, you can instantiate it
 # one example conv layer has been provided for you
-from models import Net
+from models import Net_V1, Net_V2, Net_V3
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 from data_load import FacialKeypointsDataset
 # the transforms we defined in Notebook 1 are in the helper file `data_load.py`
 from data_load import Rescale, RandomCrop, Normalize, ToTensor
 import torch.optim as optim
+
+batch_size = 1
+
 
 
 data_transform = composed = transforms.Compose([Rescale(250),
@@ -23,8 +26,6 @@ transformed_dataset = FacialKeypointsDataset(csv_file='./data/training_frames_ke
                                              root_dir='./data/training/',
                                              transform=data_transform)
 
-batch_size = 32
-
 train_loader = DataLoader(transformed_dataset, 
                           batch_size=batch_size,
                           shuffle=True, 
@@ -33,8 +34,6 @@ test_dataset = FacialKeypointsDataset(csv_file='./data/test_frames_keypoints.csv
                                              root_dir='./data/test/',
                                              transform=data_transform)
 
-batch_size = 32
-
 test_loader = DataLoader(test_dataset, 
                           batch_size=batch_size,
                           shuffle=True, 
@@ -42,7 +41,8 @@ test_loader = DataLoader(test_dataset,
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-net = Net().to(device)
+net = Net_V2().to(device)
+print(net)
 # net = nn.Sequential(
 #     nn.Conv2d(1, 32, 4),
 #     nn.MaxPool2d(2,2),
@@ -70,7 +70,7 @@ criterion = nn.SmoothL1Loss()
 #tried MSELoss => loss value after 10 ep = not good enough
 optimizer = optim.Adam(net.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08)
 
-n_epochs = 15
+n_epochs = 20
 
 ##IMPORTANT##
 # Because of the conversion to floats, we use .coda.FloatTensor
@@ -81,7 +81,8 @@ if net is not None:
     net.train()
 
     for epoch in range(n_epochs):  # loop over the dataset multiple times
-        
+        net.train()
+
         running_loss = 0.0
 
         # train on batches of data, assumes you already have train_loader
@@ -125,6 +126,16 @@ if net is not None:
                 running_loss = 0.0
 
     print('Finished Training')
+
+#Saving the model
+
+## TODO: change the name to something uniqe for each new model
+model_dir = 'saved_models/'
+model_name = 'keypoints_model_Adam_SL1_NET_V2'
+
+# after training, save your model parameters in the dir 'saved_models'
+torch.save(net.state_dict(), model_dir+model_name+'_epoch_'+str(n_epochs) + '.pt')
+
 
 #For testing we define the following functions
 
@@ -206,13 +217,6 @@ print(gt_pts.size())
 visualize_output(test_images, test_outputs, gt_pts)
 
 
-#Saving the model
 
-## TODO: change the name to something uniqe for each new model
-model_dir = 'saved_models/'
-model_name = 'keypoints_model_Adam_SL1_NaimishNet_partial_xavier_conv'
-
-# after training, save your model parameters in the dir 'saved_models'
-torch.save(net.state_dict(), model_dir+model_name+'_epoch_'+str(n_epochs) + '.pt')
 
 
