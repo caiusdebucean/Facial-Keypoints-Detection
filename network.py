@@ -14,7 +14,7 @@ from data_load import FacialKeypointsDataset
 from data_load import Rescale, RandomCrop, Normalize, ToTensor
 import torch.optim as optim
 
-batch_size = 1
+batch_size = 32
 
 
 
@@ -41,7 +41,7 @@ test_loader = DataLoader(test_dataset,
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-net = Net_V2().to(device)
+net = Net_V1().to(device)
 print(net)
 # net = nn.Sequential(
 #     nn.Conv2d(1, 32, 4),
