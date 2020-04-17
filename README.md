@@ -1,6 +1,6 @@
 # Facial-Keypoints-Detection
 
-A Neural network trained YouTube Faces Dataset on  to detect the facial keypoints from images. This is the first project of the [*Udacity Computer Vision Expert Nanodegree*](https://www.udacity.com/course/computer-vision-nanodegree--nd891).
+A Neural network trained YouTube Faces Dataset on  to detect the facial keypoints from images. This is the first project of the [*Udacity Computer Vision Nanodegree*](https://www.udacity.com/course/computer-vision-nanodegree--nd891).
 
 ### Overview
 
